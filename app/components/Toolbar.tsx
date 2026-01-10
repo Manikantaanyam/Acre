@@ -2,17 +2,62 @@
 import { ChevronDown, Home, Layers } from "lucide-react";
 import Button from "./Button";
 import { ACTION_ITEMS } from "@/constants/constant";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Toolbar() {
-  const [openList, setOpenList] = useState(false);
+  const [openList, setOpenList] = useState<boolean>(false);
+  const [fileType, setFileType] = useState<"video" | "audio" | "image" | null>(
+    null
+  );
+  console.log("file", fileType);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleClick(type: string) {
+    if (type === "audio" || type === "video" || type === "image") {
+      setFileType(type);
+      fileInputRef?.current?.click();
+    }
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !fileType) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("fileType", fileType);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("data", data);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 mt-6 flex justify-between items-center">
+      <input
+        className="hidden"
+        type="file"
+        ref={fileInputRef}
+        accept={
+          fileType === "video"
+            ? "video/*"
+            : fileType === "audio"
+            ? "audio/*"
+            : fileType === "image"
+            ? "image/*"
+            : undefined
+        }
+        onChange={handleFileChange}
+      />
       <div className="hidden md:flex items-center gap-2 p-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl">
         {ACTION_ITEMS.map(({ id, name, icon: Icon, iconColor }) => (
           <button
             key={id}
+            onClick={() => handleClick(name.toLowerCase())}
             className="group flex gap-2.5 items-center justify-center px-4 py-2 rounded-lg transition-all duration-200 hover:bg-white/10 active:scale-95"
           >
             <Icon
@@ -26,6 +71,7 @@ export default function Toolbar() {
         ))}
       </div>
 
+      {/* Mobile drop down */}
       <div className="flex md:hidden relative">
         <button
           onClick={() => setOpenList((p) => !p)}
@@ -46,6 +92,7 @@ export default function Toolbar() {
             {ACTION_ITEMS.map(({ id, name, icon: Icon, iconColor }) => (
               <button
                 key={id}
+                onClick={() => handleClick(name)}
                 className="w-full text-xs flex gap-3 items-center hover:bg-white/5 px-3 py-2.5 rounded-md transition-colors text-zinc-400 hover:text-white"
               >
                 <Icon size={16} className={iconColor} />
