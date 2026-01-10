@@ -92,7 +92,7 @@ export default function Toolbar() {
             {ACTION_ITEMS.map(({ id, name, icon: Icon, iconColor }) => (
               <button
                 key={id}
-                onClick={() => handleClick(name)}
+                onClick={() => handleClick(name.toLowerCase())}
                 className="w-full text-xs flex gap-3 items-center hover:bg-white/5 px-3 py-2.5 rounded-md transition-colors text-zinc-400 hover:text-white"
               >
                 <Icon size={16} className={iconColor} />
