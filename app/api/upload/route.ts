@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { inngest } from "@/lib/ingest/inngest";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -24,7 +25,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ msg: "Missing data" });
     }
 
-    // convert file to arraybuffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -40,6 +40,14 @@ export async function POST(req: NextRequest) {
           }
         )
         .end(buffer);
+    });
+
+    await inngest.send({
+      name: "video.uploaded",
+      data: {
+        videoUrl: uploadResult.secure_url,
+        type: fileType,
+      },
     });
 
     return NextResponse.json({
