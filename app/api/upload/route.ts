@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       cloudinary.uploader
         .upload_stream(
           {
-            resource_type: fileType === "video" ? "video" : "image",
+            resource_type: "auto",
           },
           (error, result) => {
             if (error) reject(error);

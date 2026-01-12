@@ -9,13 +9,10 @@ const processVideoAI = inngest.createFunction(
     const { videoUrl, type } = event.data;
 
     const result = await step.run("gemini-analysis", async () => {
-      if(type ==="video"){
-        
-      }
       return await downloadCloudinaryVideoAndProcessWithAi(
         videoUrl,
         "my_file",
-        "video.mp4"
+        type
       );
     });
 
