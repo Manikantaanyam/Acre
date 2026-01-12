@@ -6,13 +6,23 @@ import videoUnderstanding from "./ai/video-understanding";
 import { EFFICIENT_PROMPT } from "@/prompts/video-prompt";
 import imageUnderstanding from "./ai/image-understanding";
 import { IMAGE_PROMPT } from "@/prompts/image-prompts";
+import audioUnderStanding from "./ai/audio-understanding";
+import { AUDIO_PROMPT } from "@/prompts/audio-prompt";
 
 export default async function downloadCloudinaryVideoAndProcessWithAi(
   url: string,
   targetDirectory: string,
   type: string
 ): Promise<void> {
-  let fileName = type === "video" ? "video.mp4" : "image.jpeg";
+    
+  let fileName;
+  if (type === "video") {
+    fileName = "video.mp4";
+  } else if (type === "image") {
+    fileName = "image.jpeg";
+  } else {
+    fileName = "audio.mp3";
+  }
 
   const uniquePrefix = Date.now();
   const uniqueFileName = `${uniquePrefix}_${fileName}`;
@@ -42,8 +52,10 @@ export default async function downloadCloudinaryVideoAndProcessWithAi(
     const normalizedPath = outputPath.replace(/\\/g, "/");
     if (type === "video") {
       videoUnderstanding(normalizedPath, EFFICIENT_PROMPT);
-    } else {
+    } else if (type === "image") {
       imageUnderstanding(normalizedPath, IMAGE_PROMPT);
+    } else {
+      audioUnderStanding(normalizedPath, AUDIO_PROMPT);
     }
   } catch (error) {
     console.error("Error in the download/upload pipeline:", error);

@@ -1,11 +1,11 @@
-import AddItemsBar from "./components/Toolbar";
 import Navbar from "./components/Navbar";
+import Toolbar from "./components/Toolbar";
 
 export default function Home() {
   return (
     <div>
       <Navbar />
-      <AddItemsBar />
+      <Toolbar />
     </div>
   );
 }
