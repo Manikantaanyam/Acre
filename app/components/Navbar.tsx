@@ -1,9 +1,13 @@
+"use client";
 import { Search } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import User from "../../public/user.jpg";
+import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Navbar() {
+  const { data: session } = useSession();
+  const [showSignOut, setShowSignOut] = useState(false);
+
   return (
     <nav className="px-6 md:px-16 py-4 max-w-7xl mx-auto flex justify-between sticky top-0 z-50 bg-black/50 backdrop:blur-md">
       <Link href="/" className="flex gap-1 items-center justify-center">
@@ -26,9 +30,22 @@ export default function Navbar() {
             <span className="text-base">⌘ </span>+ K
           </kbd>
         </div>
-        <button className="text-white flex items-center justify-center bg-[#2F2F2F] hover:bg-[#86ff2e] hover:text-black w-6 h-6 md:w-10 md:h-10 rounded-full overflow-hidden">
-          <Image src={User} alt="M" />
-        </button>
+        <div className="relative group">
+          <button
+            onClick={() => setShowSignOut((p) => !p)}
+            className=" text-white text-xs flex items-center justify-center bg-[#2F2F2F] hover:bg-[#86ff2e] hover:text-black w-6 h-6 md:w-10 md:h-10 rounded-full overflow-hidden"
+          >
+            <img src={session?.user?.image || " "} alt={"M"} />
+          </button>
+          {showSignOut && (
+            <button
+              onClick={() => signOut()}
+              className="absolute -bottom-8.5 rounded-md border border-[#86ff2e]/50 -left-1/3 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1a1a1a] text-white text-xs font-semibold px-4 py-2 cursor-pointer flex items-center justify-center"
+            >
+              Signout
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );
