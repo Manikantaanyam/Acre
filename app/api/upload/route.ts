@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { inngest } from "@/lib/ingest/inngest";
+import { getServerSession } from "next-auth";
+import prisma from "@/lib/prisma";
+import { ItemType } from "@/lib/generated/prisma/enums";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,6 +20,13 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const data = await getServerSession();
+    const user = await prisma.user.findUnique({
+      where: {
+        email: data?.user?.email as string,
+      },
+    });
 
     const file = formData.get("file") as File | null;
     const fileType = formData.get("fileType") as string | null;
@@ -42,10 +52,25 @@ export async function POST(req: NextRequest) {
         .end(buffer);
     });
 
-    await inngest.send({
-      name: "video.uploaded",
+    if (!user) {
+      throw new Error("No user Id");
+    }
+
+    const item = await prisma.item.create({
       data: {
-        videoUrl: uploadResult.secure_url,
+        userId: user.id,
+        type: fileType.toUpperCase() as ItemType,
+        status: "UPLOADED",
+        storageUrl: uploadResult.secure_url,
+        mimeType: uploadResult.resource_type,
+        size: uploadResult.bytes,
+      },
+    });
+
+    await inngest.send({
+      name: "item.uploaded",
+      data: {
+        itemId: item.id,
         type: fileType,
       },
     });

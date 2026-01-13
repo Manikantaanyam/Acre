@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { Gemini } from "./gemini";
+import prisma from "../prisma";
 
 const ai = Gemini();
 

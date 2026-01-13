@@ -20,5 +20,65 @@ model User {
   name String?
   image String? 
   created_At DateTime @default(now()) 
-  updated_At DateTime
+  items Item[]
 }
+
+model Item {
+  id Int @id @default(autoincrement())
+  userId Int
+  type ItemType
+  status ItemStatus
+  storageUrl String?
+  mimeType String?
+  size Int?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User       @relation(fields: [userId], references: [id])
+  content ItemContent?
+  metadata    ItemMetadata?
+  videoScenes VideoScene[]
+}
+
+model ItemContent{
+  id Int @id @default(autoincrement())
+  itemId Int @unique
+  text String
+  item Item @relation(fields: [itemId], references: [id])
+}
+
+model ItemMetadata{
+  id Int @id @default(autoincrement())
+  itemId Int @unique
+  title String?
+  description String?
+  tags Json?
+  item Item @relation(fields: [itemId], references: [id])
+}
+
+model VideoScene{
+  id Int @id @default(autoincrement())
+  itemId Int
+  startTime Float
+  endTime   Float
+  caption   String
+  item Item  @relation(fields: [itemId], references: [id])
+}
+
+
+enum ItemType {
+  IMAGE
+  VIDEO
+  AUDIO
+  NOTE
+  CODE
+  LINK
+}
+
+enum ItemStatus {
+  UPLOADED    
+  PROCESSING  
+  READY      
+  FAILED
+}
+
+

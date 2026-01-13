@@ -33,9 +33,13 @@ export default function Navbar() {
         <div className="relative group">
           <button
             onClick={() => setShowSignOut((p) => !p)}
-            className=" text-white text-xs flex items-center justify-center bg-[#2F2F2F] hover:bg-[#86ff2e] hover:text-black w-6 h-6 md:w-10 md:h-10 rounded-full overflow-hidden"
+            className=" text-white text-md font-medium flex items-center justify-center bg-[#2F2F2F] hover:bg-[#86ff2e] hover:text-black w-6 h-6 md:w-10 md:h-10 rounded-full overflow-hidden"
           >
-            <img src={session?.user?.image || " "} alt={"M"} />
+            <img
+              src={session?.user?.image || ""}
+              alt={session?.user?.name?.charAt(0)}
+              className="w-full h-full object-cover block"
+            />
           </button>
           {showSignOut && (
             <button

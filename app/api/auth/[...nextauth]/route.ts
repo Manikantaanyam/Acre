@@ -23,13 +23,11 @@ const handler = NextAuth({
         update: {
           name: user.name,
           image: user.image,
-          updated_At: new Date(),
         },
         create: {
           name: user.name,
           email: user.email,
           image: user.image,
-          updated_At: new Date(),
         },
       });
 
